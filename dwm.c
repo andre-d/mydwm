@@ -2227,6 +2227,7 @@ updatesystrayicongeom(Client *i, int w, int h) {
 				i->w = (int) ((float)bh * ((float)i->w / (float)i->h));
 			i->h = bh;
 		}
+		resizeclient(i, i->x, i->y, i->w, i->h);
 	}
 }
 
