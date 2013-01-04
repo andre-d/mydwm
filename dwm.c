@@ -1358,8 +1358,11 @@ movemouse(const Arg *arg) {
 			handler[ev.type](&ev);
 			break;
 		case MotionNotify:
-			nx = ocx + (ev.xmotion.x - x);
-			ny = ocy + (ev.xmotion.y - y);
+			if(!getrootptr(&nx, &ny)) {
+				break;
+			}
+			nx = ocx + (nx - x);
+			ny = ocy + (ny - y);
 			if(nx >= selmon->wx && nx <= selmon->wx + selmon->ww
 			&& ny >= selmon->wy && ny <= selmon->wy + selmon->wh) {
 				if(abs(selmon->wx - nx) < snap)
@@ -1532,8 +1535,11 @@ resizemouse(const Arg *arg) {
 			handler[ev.type](&ev);
 			break;
 		case MotionNotify:
-			nw = MAX(ev.xmotion.x - ocx - 2 * c->bw + 1, 1);
-			nh = MAX(ev.xmotion.y - ocy - 2 * c->bw + 1, 1);
+			if(!getrootptr(&nw, &nh)) {
+				break;
+			}
+			nw = MAX(nw - ocx - 2 * c->bw + 1, 1);
+			nh = MAX(nh - ocy - 2 * c->bw + 1, 1);
 			if(c->mon->wx + nw >= selmon->wx && c->mon->wx + nw <= selmon->wx + selmon->ww
 			&& c->mon->wy + nh >= selmon->wy && c->mon->wy + nh <= selmon->wy + selmon->wh)
 			{
