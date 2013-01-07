@@ -251,6 +251,7 @@ static void propertynotify(XEvent *e);
 static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
 static void removesystrayicon(Client *i);
+static void redrawborder(Client *c);
 static void resize(Client *c, int x, int y, int w, int h, Bool interact);
 static void resizebarwin(Monitor *m);
 static void resizeclient(Client *c, int x, int y, int w, int h);
@@ -957,12 +958,23 @@ focus(Client *c) {
 		attachstack(c);
 		grabbuttons(c, True);
 		XSetWindowBorder(dpy, c->win, dc.sel[ColBorder]);
+		redrawborder(c);
 		setfocus(c);
 	}
 	else
 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
 	selmon->sel = c;
 	drawbars();
+}
+
+void
+redrawborder(Client *c) {
+	/* works around a bug in X drivers of Virtualbox and VMWare */
+	XWindowChanges wc;
+	wc.border_width = 0;
+	XConfigureWindow(dpy, c->win, CWBorderWidth, &wc);
+	wc.border_width = c->bw;
+	XConfigureWindow(dpy, c->win, CWBorderWidth, &wc);
 }
 
 void
@@ -1971,6 +1983,7 @@ unfocus(Client *c, Bool setfocus) {
 		return;
 	grabbuttons(c, False);
 	XSetWindowBorder(dpy, c->win, dc.norm[ColBorder]);
+	redrawborder(c);
 	if(setfocus)
 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
 }
